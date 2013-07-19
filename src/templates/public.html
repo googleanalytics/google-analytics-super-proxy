@@ -1,0 +1,17 @@
+{% extends "base_page.html" %}
+ {% set omit_admin_link = true %}
+
+{% block pagetitle %}Access Denied{% endblock %}
+{% block bodytitle %}Authorization Required{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+<div id="admin_container">
+  <h3 class="error_message">Access Denied</h3>
+  <p class="auth_status_message">You must be granted access by the administrator
+    to use this service.</p>
+</div>
+
+{% endblock %}

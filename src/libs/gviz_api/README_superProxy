@@ -1,0 +1,8 @@
+The Data Source Python Library is required by the Google Analytics superProxy
+to transform responses to Data Tables.
+https://developers.google.com/chart/interactive/docs/dev/gviz_api_lib
+
+The Python library is available at:
+https://code.google.com/p/google-visualization-python/
+
+Place the gviz_api.py module in this directory.

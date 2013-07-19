@@ -1,0 +1,77 @@
+{% extends "base_query_page.html" %}
+
+{% set ga_connected = user_settings.ga_refresh_token %}
+
+{% block pagetitle %}Manage Users{% endblock %}
+{% block bodytitle %}Manage Users{% endblock %}
+
+{% block head %}
+<script src="{{ LINKS.js }}helpers.js"></script>
+{% endblock %}
+
+{% block api_query_content %}
+<div class="admin_container auth_container">
+  <div class="container_heading">
+    <h2>Add a User</h2>
+  </div>
+    <form method="post" id="user_form" onsubmit="return validateForm(this)"
+          action="{{ LINKS['admin_users'] }}">
+      <label class="email_label" for="name">Email</label>
+      <input type="text" id="email" name="email"/>
+      <span class="validate-text" id="email_msg"></span><br/>
+      <input type="submit" class="button button-red create-button"
+             name="add_user" id="add_user" value="Add User"/>
+      <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}"/>
+    </form>
+  <p class="user_activate">Once you add a user please let them know they can
+    activate their account by visiting:
+    <a href="{{ activate_link }}">{{ activate_link }}</a>
+  </p>
+</div>
+
+{% for invite in invitations %}
+  {% if loop.first %}
+    <div class="admin_container auth_container">
+      <div class="container_heading">
+        <h2>Outstanding Invites</h2>
+      </div>
+      <table class="admin_table">
+        <tr>
+          <th>Email</th>
+          <th>Date Added</th>
+        </tr>
+        </tr>
+  {% endif %} {# First item in loop #}
+        <tr>
+          <td class="name">{{ invite.email }}</td>
+          <td class="name">{{ invite.issued }}</td>
+        </tr>
+  {% if loop.last %}
+      </table>
+    </div>
+   {% endif %} {# Last item in loop #}
+{% endfor %}
+
+{% for user in users %}
+  {% if loop.first %}
+    <div class="admin_container auth_container">
+      <div class="container_heading">
+        <h2>Active Users</h2>
+      </div>
+      <table class="admin_table">
+        <tr>
+          <th>Email</th>
+          <th>Name</th>
+        </tr>
+        </tr>
+  {% endif %} {# First item in loop #}
+        <tr>
+          <td class="name">{{ user.email }}</td>
+          <td class="name">{{ user.nickname }}</td>
+        </tr>
+  {% if loop.last %}
+      </table>
+    </div>
+   {% endif %} {# Last item in loop #}
+{% endfor %}
+{% endblock %}

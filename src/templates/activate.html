@@ -1,0 +1,20 @@
+{% extends "base_page.html" %}
+{% set omit_admin_link = true %}
+
+{% block pagetitle %}Account Activation{% endblock %}
+{% block bodytitle %}Welcome{% endblock %}
+
+{% block content %}
+<div id="admin_container">
+  <div class="activation_container">
+  <p>Welcome to <strong>Google Analytics superProxy</strong>.
+    Activate your account to get started.</p>
+    <form method="post" id="activate_form"
+          action="{{ LINKS['owner_activate'] }}">
+      <input type="submit" class="button button-blue create-button"
+             name="activate_user" id="activate_user" value="Activate"/>
+      <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}"/>
+    </form>
+  </div>
+</div>
+{% endblock %}

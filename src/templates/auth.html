@@ -1,0 +1,17 @@
+{% extends "base_page.html" %}
+
+{% block pagetitle %}Authorization{% endblock %}
+{% block bodytitle %}Google Analytics Authorization{% endblock %}
+
+{% block content %}
+<div id="admin_container">
+  <h3 class="error_message {{ status }}">{{ status }}</h3>
+  <p class="auth_status_message">{{ message }}</p>
+  {% if message_detail %}
+  <h4>Details: </h4>
+  <p class="error_message_detail">{{ message_detail }}</p>
+  {% endif %}
+  <p><a class="button button-blue" href="{{ LINKS['owner_index'] }}">Continue</a></p>
+</div>
+
+{% endblock %}

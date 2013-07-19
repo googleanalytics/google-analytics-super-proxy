@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Google Analytics superProxy - {% block pagetitle %}{% endblock %}
+    </title>
+    <link href="{{ LINKS.css }}style.css" type="text/css" rel="stylesheet">
+    {% block head %}{% endblock%}
+  </head>
+  <body>
+    <script src="{{ LINKS.js }}framebuster.js"></script>
+    <div id="page">
+      <div class="user_details">
+        <span id="user_email">{{ current_user_email }}</span>
+        <a href={{ logout_url }}>logout</a></div>
+      <div>
+        <h1 class="query">{% block bodytitle %}{% endblock %}</h1>
+        {% if not omit_admin_link %}
+          <span><a class="back_link" href="{{ LINKS['owner_index'] }}">
+              &laquo; Admin Home</a></span>
+        {% endif %}
+      </div>
+      <p class="title_tagline">{% block titletagline %}{% endblock %}</p>
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>

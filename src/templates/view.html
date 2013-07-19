@@ -1,0 +1,74 @@
+{% extends "base_query_page.html" %}
+
+{% block pagetitle %}{{ api_query.name }}{% endblock %}
+{% block bodytitle %}Manage{% endblock %}
+
+
+{% block head %}
+<script src="{{ LINKS.js }}helpers.js"></script>
+{% endblock %}
+
+{% block api_query_content %}
+    <div class="admin_container">
+      <div class="container_heading">
+        <h2>Public Request Endpoint</h2>
+      </div>
+      <div class="manage action_bar">
+        <form class="action_bar" method="post"
+              action="{{ api_query.status_change_link }}">
+          <input type="hidden" id="redirect" name="redirect"
+                 value="{{ api_query.manage_link }}"/>
+          <input type="hidden" id="ui" name="ui" value="true"/>
+          <input type="submit"
+                 class="button button-{{ query_status_btn_color }}"
+                 value="{{ query_status_btn }}"/>
+          <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}"/>
+        </form>
+        <form class="delete action_bar delete_button" method="post"
+              id="delete_query" action="{{ api_query.delete_link }}">
+          <input type="submit" class="button button-red" value="Delete"/>
+          <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}"/>
+        </form>
+    <a class="edit-button button button-gray" href="{{ api_query.edit_link }}">Edit</a>
+      </div>
+      <p class="tagline">Details about the configuration and the public URL for
+        this query.</p>
+
+      <table class="query_table">
+        <tr>
+          <td class="row_label">Name</td>
+          <td>{{ api_query.name }}</td>
+        </tr>
+        <tr>
+          <td class="row_label">URL</td>
+          <td>
+            <a href="{{ api_query.public_link }}">{{ api_query.public_link }}</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="row_label">Formats</td>
+          <td>
+            {% for format in api_query.format_links|dictsort %}
+              <a href="{{ format[1] }}">
+              {{ format[0] }}</a>&nbsp;
+            {% endfor %}
+          </td>
+        </tr>
+        <tr>
+          <td class="row_label">Status</td>
+          <td class="manage_status" id="{{ query_status_id }}">
+            {{ query_status }}</td>
+        </tr>
+        <tr>
+          <td class="row_label">API Request</td>
+          <td>{{ api_query.request }}</td>
+        </tr>
+        {% if is_admin %}
+        <tr>
+          <td class="row_label">Owner</td>
+          <td>{{ api_query.user_email }}</td>
+        </tr>
+        {% endif %}
+      </table>
+    </div>
+{% endblock %}

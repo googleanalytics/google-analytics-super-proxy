@@ -1,0 +1,164 @@
+{% extends "base_page.html" %}
+
+{% if api_query %}
+
+    {# Set API Query status style #}
+    {% if api_query.is_active %}
+      {% set query_status = 'Enabled' %}
+      {% set query_status_btn = 'Disable Endpoint' %}
+      {% set query_status_btn_color = 'red' %}
+      {% set query_status_id = 'query_enabled' %}
+    {% else %}
+      {% set query_status = 'Disabled' %}
+      {% set query_status_btn = 'Enable Endpoint' %}
+      {% set query_status_btn_color = 'blue' %}
+      {% set query_status_id = 'query_disabled' %}
+    {% endif %}
+
+    {# Set Schedule status style #}
+    {% if api_query.is_scheduled %}
+      {% set schedule_status = 'Running' %}
+      {% set schedule_status_btn = 'Pause Scheduling' %}
+      {% set schedule_status_btn_color = 'red' %}
+      {% set scheduling_id = 'scheduling_running' %}
+    {% else %}
+      {% set schedule_status = 'Paused' %}
+      {% set schedule_status_btn = 'Start Scheduling' %}
+      {% set schedule_status_btn_color = 'blue' %}
+      {% set scheduling_id = 'scheduling_paused' %}
+    {% endif %}
+{% endif %}
+
+{% block content %}
+  {% block api_query_content %}{% endblock %}
+
+  {% if api_query %}
+
+    <div class="admin_container">
+      <div class="container_heading">
+        <h2>Scheduling</h2>
+      </div>
+      {% if not api_query.is_error_limit_reached %}
+        <div class="action_bar">
+        {% if api_query.is_active %}
+          <form class="action_bar" method="post"
+                action="{{ LINKS['query_schedule'] }}">
+            <input type="hidden" name="query_id" value="{{ api_query.id }}"/>
+            <input type="hidden" name="ui" value="true"/>
+            <input class="button button-{{ schedule_status_btn_color }}"
+                   type="submit"
+                   id="ui_schedule" name="schedule"
+                   value="{{ schedule_status_btn }}"/>
+            <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}"/>
+          </form>
+        {% else %}
+          <div class="endpoint_warning">Enable the public
+            request endpoint to start scheduling</div>
+        {% endif %}
+        </div>
+      {% endif %}
+      <p class="tagline">Schedule and check the status of updated.</p>
+      <table class="query_table">
+        <tr>
+          <td class="row_label">Status</td>
+          <td id="{{ scheduling_id }}" class="manage_status">
+             {{ schedule_status }}</td>
+        </tr>
+        <tr>
+          <td class="row_label">Refresh Interval</td>
+          <td>{{ api_query.refresh_interval }} seconds</td>
+        </tr>
+        <tr>
+          <td class="row_label">Last Refreshed</td>
+          <td>{{ api_query.modified_timedelta }}</td>
+        </tr>
+      </table>
+     </div>
+
+    {% for error in api_query.errors %}
+      {% if loop.first %}
+      <div class="admin_container">
+        <div class="container_heading">
+          <h2 id="error_count">
+            Errors ({{ api_query.error_count }})</h2>
+        </div>
+        <div class="action_bar">
+          <form class="delete" method="post"
+                id='clear_errors' action="{{ api_query.delete_errors_link }}">
+            <input type="hidden" id="redirect" name="redirect"
+                   value="{{ api_query.manage_link }}">
+            <input type="submit" class="button button-red"
+                   value="Clear Errors"/>
+            <input type="hidden" id="type" name="type" value="errors"/>
+            <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}"/>
+          </form>
+        </div>
+        <p class="tagline">Error responses received during API request fetch.
+        </p>
+        <table class="query_table">
+          <tr>
+            <th>Timestamp</th>
+            <th>Error</th>
+          </tr>
+      {% endif %} {# first error in loop #}
+
+          <tr>
+            <td class="row_label">{{ error.timestamp }}</td>
+            <td>{{ error.content }}</td>
+          </tr>
+
+      {% if loop.last %}
+        </table>
+      </div>
+      {% endif %} {# last error in list #}
+    {% endfor %}
+
+    <div class="admin_container">
+      <div class="container_heading">
+        <h2>Response Info</h2>
+      </div>
+      {% if not api_query.is_error_limit_reached %}
+      <div class="action_bar">
+        <form class="action_bar" method="post" action="{{ LINKS['query_run'] }}">
+          <input type="hidden" name="query_id" value="{{ api_query.id }}"/>
+          <input type="hidden" name="ui" value="true"/>
+          <input class="button button-blue" type="submit"
+                 id="run_once" name="run_once" value="Refresh Now"/>
+          <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}"/>
+        </form>
+      </div>
+      {% endif %}
+      <p class="tagline">Details about the response for requests to the Public
+        Endpoint.</p>
+      <table class="query_table">
+        <tr>
+          <td class="row_label">Last Requested</td>
+          <td>{{ api_query.last_request_timedelta }}</td>
+        </tr>
+        <tr>
+          <td class="row_label">Request Count</td>
+          <td>{{ api_query.request_count }}</td>
+        </tr>
+        <tr>
+          <td class="row_label">Response</td>
+          <td>
+      {% if api_query.response_content %}
+        <div class="response_container">
+          {{ api_query.response_content }}</div>
+      {% else %}
+        <p><strong>No response found.</strong></p>
+        <p>
+        {% if api_query.is_active and api_query.in_queue %}
+          The query is scheduled, click on Run Now to execute it manually.
+        {% else %}
+          Click <strong>Start</strong> to schedule this query.
+        {% endif %}
+        </p>
+        </td>
+        </tr>
+      </table>
+      {% endif %}
+    </div>
+
+  {% endif %} {# if api_query #}
+{% endblock %}

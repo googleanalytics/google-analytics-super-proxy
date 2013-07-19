@@ -1,0 +1,136 @@
+{% extends "base_page.html" %}
+{% set omit_admin_link = true %}
+{% set ga_connected = user_settings.ga_refresh_token %}
+{% block pagetitle %}Admin Home{% endblock %}
+{% block bodytitle %}Google Analytics superProxy{% endblock %}
+
+{% block content %}
+
+<p id="site_description">The Google Analytics superProxy allows you to publicly
+  share your Google Analytics reporting data. Use it to power your own
+  custom dashboards and widgets, transform responses to various formats, manage
+  your quota efficiently, and much more. Visit the
+  <a href="https://github.com/googleanalytics/google-analytics-super-proxy">
+  google-analytics-super-proxy</a> repo on GitHub for additional information.
+</p>
+
+<div class="sandbar auth_container">
+  {% if is_admin %}
+  <p class="users_button">
+    <a class="button button-blue"
+       href="{{ LINKS['admin_users'] }}">Manage Users</a>
+  </p>
+  {% endif %}
+
+  {% if ga_connected %}
+    <p class="create_button">
+      <a class="button button-red"
+         href="{{ LINKS['query_create'] }}">Create Query</a>
+    </p>
+    <p class="revoke_button">
+      <span class="revoke_button">
+        Google Analytics access is authorized. </span>
+      <a class="button button-gray"
+         href="{{ revoke_token_url }}">Revoke Access</a>
+    </p>
+  {% else %}
+    <p class="auth_button">
+      <a class="button button-blue" href="{{ oauth_url }}">Authorize Access</a>
+    </p>
+  {% endif %}
+</div>
+
+{% if not ga_connected %}
+<p class="auth_button
+{% if is_admin %}auth_padding_admin{% else %}auth_padding{% endif %}">
+  <span class="auth_message">
+    <strong>Authorize access</strong> to get started and create a new
+    query.</span>
+    <span class="auth_arrow">&uarr;</span>
+</p>
+{% endif %}
+{% for api_query in api_queries %}
+
+  {# Set API Query status formatting #}
+  {% if api_query.is_active %}
+    {% set query_status = 'Enabled' %}
+    {% set query_status_id = 'query_enabled' %}
+  {% else %}
+    {% set query_status = 'Disabled' %}
+    {% set query_status_id = 'query_disabled' %}
+  {% endif %}
+
+  {# Set Schedule Status Formatting #}
+  {% if api_query.is_scheduled %}
+    {% set scheduling_status = 'Running' %}
+    {% set scheduling_id = 'scheduling_running' %}
+  {% else %}
+    {% set scheduling_status = 'Paused' %}
+    {% set scheduling_id = 'scheduling_paused' %}
+  {% endif %}
+
+  {% if loop.first %}
+    <div class="admin_container">
+      <div class="container_heading">
+        <h2>Queries</h2>
+      </div>
+      <table class="admin_table">
+        <tr>
+          <th>Name</th>
+          <th>Public Endpoint</th>
+          <th>Endpoint Status</th>
+          <th>Scheduling Status</th>
+          <th>Refreshed</th>
+          <th>Requested</th>
+          <th>Request Count</th>
+          <th>Errors</th>
+          {% if is_admin %}<th>Owner</th>{% endif %}
+          <th></th>
+        </tr>
+  {% endif %} {# First item in loop #}
+
+        <tr>
+          <td class="name">{{ api_query.name }}</td>
+          <td class="public_link">
+          <a href="{{ api_query.public_link }}">{{ api_query.public_link }}</a>
+          </td>
+          <td>
+              <span id="{{ query_status_id }}">{{ query_status }}</span>
+          </td>
+          <td>
+              <span id="{{ scheduling_id }}">{{ scheduling_status }}</span>
+          </td>
+          <td>{{ api_query.modified_timedelta }}</td>
+          <td>{{ api_query.last_request_timedelta }}</td>
+          <td>{{ api_query.request_count }}</td>
+          <td {% if api_query.is_error_limit_reached %}
+                class="error_limit_reached"{% endif %}>
+            {{ api_query.error_count }}
+          </td>
+          {% if is_admin %}
+          <td class="email">
+            {% if current_user_email == api_query.user_email %}
+              me
+            {% else %}
+              {{ api_query.user_email }}</td>
+            {% endif %}
+          {% endif %}
+          <td class="operations">
+            <a class="button button-gray"
+               href="{{ api_query.manage_link }}">
+               Manage</a>&nbsp;
+          </td>
+        </tr>
+  {% if loop.last %}
+      </table>
+    </div>
+  {% endif %} {# Last item in loop #}
+
+{% else %}
+  {% if ga_connected %}
+    <p class="create_message">
+      <span class="create_arrow">&uarr;</span>
+      To get started click on <strong>Create Query</strong></p>
+  {% endif %}
+{% endfor %}
+{% endblock %}

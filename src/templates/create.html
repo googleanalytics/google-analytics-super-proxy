@@ -1,0 +1,74 @@
+{% extends "base_query_page.html" %}
+
+{% set ga_connected = user_settings.ga_refresh_token %}
+
+{% block pagetitle %}Create Query{% endblock %}
+{% block bodytitle %}Create Query{% endblock %}
+
+{% block head %}
+<script src="{{ LINKS.js }}helpers.js"></script>
+{% endblock %}
+
+{% block api_query_content %}
+
+{% if ga_connected %}
+  <div class="admin_container auth_container">
+    <div class="container_heading">
+      <h2>Setup your query</h2>
+    </div>
+    <form method="post" id="query_form" onsubmit="return validateForm(this)"
+          action="{{ LINKS['query_create'] }}">
+      <label class="query_label" for="name">Query Name</label>
+      <input type="text" id="name" name="name"
+             value="{{ name }}"
+             placeholder="e.g. Site pageviews (example.com)"/> &nbsp;
+      <span class="validate-text" id="name_msg"></span><br/>
+
+      <label for="refresh_interval">Refresh Interval (seconds)</label>
+      <input type="text" id="refresh_interval" name="refresh_interval"
+             value="{{ refresh_interval }}"/> &nbsp;
+      <span class="validate-text" id="refresh_interval_msg"></span>
+      <span class="tip-text">(1 hour = 3600, 1 day = 86400)</span><br/>
+
+      <label for="request">
+        Encoded URI for the query</label>
+      <textarea id="request"
+                name="request">{{ request }}</textarea><br/>
+      <div id="date_params" class="tip-text">
+        <span class="validate-text" id="request_msg"></span><br/>
+        Supported date parameters are <strong>{today}</strong> and
+        <strong>{Ndaysago}</strong>.<br/>
+        Relative dates are resolved to actual dates during query execution
+        and are currently configured to use the
+        <strong>{{ timezone|capitalize }}</strong> timezone.<br/><br/>
+        E.g. A query for the last 7 days would use the following
+        start and end dates: <br/>
+        https://www.googleapis.com/analytics/v3/data/ga?ids=ga%3A12345&start-date={6daysago}&end-date={today}
+      </div>
+
+      <p class="explorer_tip"><strong>Tip:</strong> Use the
+        <a target="_blank" href="//ga-dev-tools.appspot.com/explorer/">
+          Google Analytics Query Explorer</a> to build a valid Query URI.
+      </p>
+
+      <input type="submit" class="button button-red create-button"
+             name="create_query" id="create_query" value="Save Query"/>
+      <input type="submit" class="button button-red save-run-button"
+             name="create_run_query" id="create_run_query"
+             value="Save & Schedule Query"/>
+      <input type="submit" class="button button-gray test-button"
+             name="test_query" id="test_query" value="Test Query"/>
+      <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}"/>
+    </form>
+
+    {% if test_response %}
+      <h4>Test Response Content</h4>
+      <div class="response_container test_response_container">
+        {{ test_response }}
+      </div>
+    {% endif %}
+
+  </div>
+{% endif %} {# New query box #}
+
+{% endblock %}

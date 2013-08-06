@@ -52,7 +52,11 @@ class PublicQueryResponseHandler(base.BaseHandler):
     query_id = self.request.get('id')
     response_format = str(self.request.get('format', co.DEFAULT_FORMAT))
 
-    transform = transformers.GetTransform(response_format)
+    # The tqx parameter is required for Data Table Response requests. If it
+    # exists then pass the value on to the Transform.
+    tqx = self.request.get('tqx', None)
+
+    transform = transformers.GetTransform(response_format, tqx)
 
     try:
       (content, status) = query_helper.GetPublicEndpointResponse(

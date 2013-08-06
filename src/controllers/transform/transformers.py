@@ -38,6 +38,7 @@
 __author__ = 'pete.frisella@gmail.com (Pete Frisella)'
 
 import cStringIO
+import urllib
 
 from libs.csv_writer import csv_writer
 from libs.gviz_api import gviz_api
@@ -70,11 +71,14 @@ JS_DATA_TYPES = {
 PRIVATE_PROPERTIES = ('id', 'query:ids', 'selfLink', 'nextLink', 'profileInfo')
 
 
-def GetTransform(response_format='json'):
+def GetTransform(response_format='json', tqx=None):
   """Returns a transform based on the requested format.
 
   Args:
     response_format: A string indicating the type of transform to get.
+    tqx: string tqx is a standard parameter for the Chart Tools Datasource
+      Protocol V0.6. If it exists then we must handle it. In this case it will
+      get passed to the Data Table Response transform.
 
   Returns:
     A transform instance for the requested format type or a default transform
@@ -89,7 +93,7 @@ def GetTransform(response_format='json'):
   elif response_format == 'data-table':
     transform = TransformDataTableString()
   elif response_format == 'data-table-response':
-    transform = TransformDataTableResponse()
+    transform = TransformDataTableResponse(tqx)
   elif response_format == 'tsv':
     output = cStringIO.StringIO()
     writer = csv_writer.GetTsvStringPrinter(output)
@@ -237,6 +241,19 @@ class TransformDataTableString(object):
 class TransformDataTableResponse(object):
   """A transform to render a Core Reporting API response as a Data Table."""
 
+  def __init__(self, tqx=None):
+    """Initialize the Data Table Response Transform.
+
+    Args:
+      tqx: string A set of colon-delimited key/value pairs for standard or
+        custom parameters. Pairs are separated by semicolons.
+        (https://developers.google.com/chart/interactive/docs/dev/
+          implementing_data_source#requestformat)
+    """
+    if tqx:
+      tqx = urllib.unquote(tqx)
+    self.tqx = tqx
+
   def Transform(self, content):
     """Transforms a Core Reporting API response to a DataTable JSON Response.
 
@@ -273,7 +290,19 @@ class TransformDataTableResponse(object):
       column_order = GetColumnOrder(column_headers)
 
       if data_table_output:
-        return data_table_output.ToJSonResponse(columns_order=column_order)
+        req_id = 0
+        # If tqx exists then handle at a minimum the reqId parameter
+        if self.tqx:
+          tqx_pairs = {}
+          try:
+            tqx_pairs = dict(pair.split(':') for pair in self.tqx.split(';'))
+          except ValueError:
+            # if the parse fails then just continue and use the empty dict
+            pass
+          req_id = tqx_pairs.get('reqId', 0)
+
+        return data_table_output.ToJSonResponse(
+            columns_order=column_order, req_id=req_id)
     return ''
 
   def Render(self, webapp, content, status):

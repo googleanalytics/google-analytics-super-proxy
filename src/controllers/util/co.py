@@ -25,7 +25,9 @@ ANONYMIZE_RESPONSES = False
 
 # Determines which timezone relative dates will be resolved to.
 # North American timezones are supported and UTC.
-#   atlantic, eastern, central, mountain, pacific, utc
+# Acceptable values are (case-insensitive):
+#   atlantic, atc, adt, eastern, est, edt, central, cst, cdt, mountain, mst,
+#   mdt, pacific, pst, pdt, utc
 # TODO(pfrisella): Move this into an Admin Web UI.
 TIMEZONE = 'pacific'
 

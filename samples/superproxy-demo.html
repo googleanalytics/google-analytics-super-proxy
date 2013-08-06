@@ -1,0 +1,65 @@
+<! --
+  Based on demo video: https://www.youtube.com/watch?v=8Or8KIhpsqg
+  This shows you how to power 2 Pie Charts using the Google Analytics
+  superProxy. Each chart uses, as a data source, a public superProxy URL
+  with the format set to Data Table Response.
+-->
+<html>
+<head>
+  <title>Pie!</title>
+
+  <!--Load the AJAX API-->
+  <script type="text/javascript"
+    src='https://www.google.com/jsapi?autoload={"modules":[{"name":"visualization","version":"1"}]}'>
+  </script>
+
+  <!-- Visualization -->
+  <!-- https://developers.google.com/chart/interactive/docs/reference#google.visualization.drawchart -->
+  <script type="text/javascript">
+    google.setOnLoadCallback(drawVisualization);
+
+    function drawVisualization() {
+
+      var browserWrapper = new google.visualization.ChartWrapper({
+          // Example Browser Share Query
+         "containerId": "browser",
+                          // Example URL: http://your-application-id.appspot.com/query?id=QUERY_ID&format=data-table-response
+         "dataSourceUrl": "REPLACE WITH Google Analytics superProxy PUBLIC URL, DATA TABLE RESPONSE FORMAT",
+         "refreshInterval": REPLACE_WITH_A_TIME_INTERVAL,
+         "chartType": "PieChart",
+         "options": {
+            "showRowNumber" : true,
+            "width": 630,
+            "height": 440,
+            "is3D": true,
+            "title": "REPLACE WITH TITLE"
+         }
+       });
+
+      var countryWrapper = new google.visualization.ChartWrapper({
+        // Example Country Share Query
+         "containerId": "country",
+         "dataSourceUrl": "REPLACE WITH Google Analytics superProxy PUBLIC URL, DATA TABLE RESPONSE FORMAT",
+         "refreshInterval": REPLACE_WITH_A_TIME_INTERVAL,
+         "chartType": "PieChart",
+         "options": {
+            "showRowNumber" : true,
+            "width": 630,
+            "height": 440,
+            "is3D": true,
+            "title": "REPLACE WITH TITLE"
+         }
+       });
+
+      browserWrapper.draw();
+      countryWrapper.draw();
+
+    }
+  </script>
+</head>
+<body>
+  <h1>Pie!</h1>
+  <div id="browser" style="margin:auto;width:630px;"></div>
+  <div id="country" style="margin:auto;width:630px;"></div>
+</body>
+</html>

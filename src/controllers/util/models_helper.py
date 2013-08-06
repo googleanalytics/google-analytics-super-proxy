@@ -147,13 +147,28 @@ def IsApiQueryAbandoned(api_query):
   """Determines whether the API Query is considered abandoned.
 
   When an API Query response has not been requested for a period
-  of time (configurable) then it is considered abandoned.
+  of time (configurable) then it is considered abandoned. Abandoned
+  queries will not be scheduled for a refresh. This saves quota and resources.
 
-  If a query has never been requested then the modified date of the query
-  will be used if it exists. If there is no modified date the the API query
-  then the if an API Query Response exists then
-  it wil be considered abandoned. This is to prevent the case where a query
-  that is never requested continues to get scheduled.
+  If any of the following 3 cases are true, then a query is considered to be
+  abandoned:
+  1) The timestamp of the last public request is greater than some multiple
+     of the query's refresh interval. The multiple is a configurable value,
+     defined as the constant ABANDONED_INTERVAL_MULTIPLE. For example, if the
+     refresh interval of a query is 30 seconds, and the
+     ABANDONED_INTERVAL_MULTIPLE is 2, and the last public request for the query
+     is greater than 60 seconds ago, then the query is considered abandoned.
+
+  If the query has never been publicly requested and there is no timestamp then
+  the modified date of the query is used. The query is considered abandoned
+  when:
+  2) The timestamp of the last modified date of the query is greater than some
+     multiple of the query's refresh interval. The multiple is a configurable
+     value, defined as the constant ABANDONED_INTERVAL_MULTIPLE.
+
+  If the query has never been publicly requested and there is no modified
+  timestamp then the query is considered abandoned when:
+  3) A stored API Query Response exists for the query.
 
   Args:
     api_query: THe API Query to check if abandonded.
@@ -161,18 +176,22 @@ def IsApiQueryAbandoned(api_query):
   Returns:
     A boolean indicating if the query is considered abandoned.
   """
+  # Case 1: Use the last requested timestamp.
   if api_query.last_request:
     last_request_age = int(
         (datetime.utcnow() - api_query.last_request).total_seconds())
     max_timedelta = co.ABANDONED_INTERVAL_MULTIPLE * api_query.refresh_interval
     return last_request_age > max_timedelta
+
+  # Case 2: Use the last modified timestamp.
   elif api_query.modified:
     last_modified_age = int(
         (datetime.utcnow() - api_query.modified).total_seconds())
     max_timedelta = co.ABANDONED_INTERVAL_MULTIPLE * api_query.refresh_interval
     return last_modified_age > max_timedelta
+
+  # Case 3: Check if there is a saved API Query Response.
   else:
-    # If query has been refreshed but never requested, mark as abandoned.
     api_query_response = api_query.api_query_responses.get()
     if api_query_response:
       return True

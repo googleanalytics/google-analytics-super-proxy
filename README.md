@@ -6,16 +6,32 @@ widgets, transform responses to various formats, manage your quota
 efficiently, test, and more. It handles authentication, caching, and
 response-formatting for you.
 
-The Google Analytics superProxy is a web application that runs in the
-[Google App Engine](https://appengine.google.com/) python environment.
+It works with the following Google Analytics APIs:
+[Core Reporting API](https://developers.google.com/analytics/devguides/reporting/core/v3/),
+[Real Time Reporting API](https://developers.google.com/analytics/devguides/reporting/realtime/v3/),
+and [Multi-Channel Funnels Reporting API](https://developers.google.com/analytics/devguides/reporting/mcf/v3/)
+
+**Quick Links**
+
+- [Video demo](http://www.youtube.com/watch?v=8Or8KIhpsqg) of the
+  Google Analytics superProxy
+- [Google Analytics superProxy](https://developers.google.com/analytics/solutions/google-analytics-super-proxy)
+  on the Google Analytics Developers site.
+  - [Managing Users](https://developers.google.com/analytics/solutions/google-analytics-super-proxy#manage-users)
+  - [Domain Restrictions](https://developers.google.com/analytics/solutions/google-analytics-super-proxy#domain)
+- [Quota Considerations](https://developers.google.com/analytics/solutions/google-analytics-super-proxy#quota)
+- [Google Analytics superProxy Forum](https://groups.google.com/forum/#!forum/google-analytics-super-proxy) (Ask questions, share Ideas, and get feedback)
 
 ## Feature Highlights
-- Publicly share your Google Analytics data
+- Public access to your Google Analytics data
 - Use the proxy to power your own custom dashboards
 - Convert to CSV, Data Table, TSV
 - Relative dates are supported (e.g. last 7 days)
 - Automatically refreshes report data
 - Caching - fast responses and efficient quota usage
+
+The Google Analytics superProxy is a web application that runs in the
+Google App Engine python environment.
 
 ## Setting up a local development environment
 1.  If necessary, download and install [Python 2.7](http://www.python.org/getit/releases/2.7/)
@@ -94,13 +110,6 @@ Requests to the public endpoint URL will return the API response for the
 specific report created. Authorization will not be required to access the
 report data and it will automatically refresh.
 
-### Additional Resources
-- [Google Analytics superProxy](https://developers.google.com/analytics/solutions/google-analytics-super-proxy)
-  (Google Analytics Developers)
-  - [Managing Users](https://developers.google.com/analytics/solutions/google-analytics-super-proxy#manage-users)
-  - [Domain Restrictions](https://developers.google.com/analytics/solutions/google-analytics-super-proxy#domain)
-  - [Quota Considerations](https://developers.google.com/analytics/solutions/google-analytics-super-proxy#quota)
-
 ### Features
 - OAuth 2.0 for authentication and it's all handled for you server side
 -	Multiple users - each with their own set of queries
@@ -127,3 +136,6 @@ report data and it will automatically refresh.
 ### Changelog
 #### 2013-07-19
 - Initial launch...super sweet!
+#### 2013-08-06
+- Multiple Google Charts on a single page works again! (Fixes [Issue #3](https://github.com/googleanalytics/google-analytics-super-proxy/issues/3))
+- Added a sample Google Charts HTML/JS demo.

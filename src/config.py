@@ -37,9 +37,9 @@ AUTH_CONFIG = {
     'OAUTH_CLIENT_SECRET': 'REPLACE THIS WITH YOUR CLIENT SECRET',
 
     # E.g. Local Dev Env on port 8080: http://localhost:8080
-    # E.g. Hosted on App Engine: https://your-application-id.appsot.com
+    # E.g. Hosted on App Engine: https://your-application-id.appspot.com
     'OAUTH_REDIRECT_URI': '%s%s' % (
-        'https://REPLACE_THIS_WITH_YOUR_APPLICATION_NAME.appsot.com OR http://localhost:8080',
+        'https://REPLACE_THIS_WITH_YOUR_APPLICATION_NAME.appspot.com OR http://localhost:8080',
         '/admin/auth')
 }
 
